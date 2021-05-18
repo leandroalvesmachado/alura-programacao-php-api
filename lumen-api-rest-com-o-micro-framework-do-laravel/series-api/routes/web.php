@@ -33,6 +33,11 @@ Ao ser implementado, a API passa a fornecer links que indicarão aos clientes
 como navegar através dos seus recursos.
 */
 
+/*
+HATEOAS - Hypermidia As The Engine Of the Application State
+Informar links para as acoes (navegacao), imagens, videos, etc
+*/
+
 // Subir o servidor no lumen, ele nao ver com o artisan serve 
 // php -S localhost:8000 -t public
 
@@ -49,7 +54,7 @@ $router->get('/', function () use ($router) {
 
 // $router->get('/series', 'SeriesController@index');
 
-$router->group(['prefix' => 'api'], function () use ($router) {
+$router->group(['prefix' => 'api', 'middleware' => 'autenticador'], function () use ($router) {
 
     $router->group(['prefix' => 'series'], function () use ($router) {
         $router->get('', 'SeriesController@index');
@@ -57,6 +62,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('{id}', 'SeriesController@show');
         $router->put('{id}', 'SeriesController@update');
         $router->delete('{id}', 'SeriesController@destroy');
+
+        $router->get('{serieId}/episodios', 'EpisodiosController@buscaPorSerie');
     });
 
     $router->group(['prefix' => 'episodios'], function () use ($router) {
@@ -67,3 +74,5 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->delete('{id}', 'EpisodiosController@destroy');
     });
 });
+
+$router->post('/api/login', 'TokenController@gerarToken');
